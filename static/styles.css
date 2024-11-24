@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Space Bot</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Additional custom CSS for styling */
+        .response {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 8px;
+            background-color: #f3f4f6;
+        }
+
+        .error {
+            color: #e53e3e;
+        }
+
+        .success {
+            color: #2d6a4f;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex justify-center items-center h-screen">
+    <div class="w-full max-w-xl p-8 bg-white rounded-lg shadow-lg">
+        <h1 class="text-center text-4xl font-semibold text-gray-800 mb-6">Ask Space Bot!</h1>
+
+        <input type="text" id="question" placeholder="Ask a question..." class="p-4 mb-4 border rounded-lg w-full focus:ring-2 focus:ring-blue-500 focus:outline-none">
+
+        <button id="askBtn" class="w-full py-3 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 transition-all">Ask</button>
+
+        <div id="response" class="response text-center mt-6"></div>
+    </div>
+
+    <script>
+        // Handle the "Ask" button click
+        document.getElementById("askBtn").addEventListener("click", async function() {
+            let question = document.getElementById("question").value;
+            
+            if (!question) {
+                alert("Please ask a question.");
+                return;
+            }
+
+            try {
+                const response = await fetch("http://127.0.0.1:5000/ask", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ question: question })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    document.getElementById("response").innerHTML = `<p class="success"><strong>Bot's Answer:</strong> ${data.answer}</p>`;
+                } else {
+                    document.getElementById("response").innerHTML = `<p class="error"><strong>Error:</strong> ${data.error}</p>`;
+                }
+
+            } catch (error) {
+                document.getElementById("response").innerHTML = `<p class="error"><strong>Error:</strong> Something went wrong! Please try again later.</p>`;
+            }
+        });
+    </script>
+</body>
+</html>
